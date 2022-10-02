@@ -9,6 +9,8 @@ public class CharacterController : MonoBehaviour
 
     public enum CharacterDirection { LEFT = 1, UP = 2, RIGHT = 3, DOWN = 4, }
 
+    public GameObject swordHand;
+
     [Header("Basic character movement")]
     [SerializeField] private float movementSpeed = 2;
     [SerializeField] private float movementSpeedBoostMultiplier = 0.2f;
@@ -27,6 +29,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private GameObject attackCollider;
     [SerializeField] private TrailRenderer trailRenderer;
     [SerializeField] private Animator animator;
+    [SerializeField] private Animator handAnimator;
     
     [Header("Automatically assigned components")]
     [SerializeField] private Rigidbody2D rb;
@@ -55,6 +58,8 @@ public class CharacterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PauseStatus.Instance.SetMouseState(false);
+
         dashCurrentCooldown = dashCooldown;
         trailRenderer.emitting = false;
     }
@@ -67,12 +72,20 @@ public class CharacterController : MonoBehaviour
 
         GetInput();
         GetDirection();
+
+        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(swordHand.transform.position);
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        swordHand.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     private void FixedUpdate()
     {
         if (PauseStatus.Instance.IsPaused)
+        {
+            rb.velocity = Vector2.zero;
             return;
+        }
+
 
         velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed * Time.deltaTime: 1);
         rb.velocity = velocity;
@@ -96,6 +109,8 @@ public class CharacterController : MonoBehaviour
         isDashing = false;
         animator.ResetTrigger("Dash");
         animator.ResetTrigger("Attack");
+
+
     }
 
     private void GetInput()
@@ -151,7 +166,7 @@ public class CharacterController : MonoBehaviour
 
         //TODO: Create attack effect towards direction
         //CameraShake.Shake(0.25f, 0.015f);
-        animator.SetTrigger("Attack");
+        handAnimator.SetTrigger("Attack");
 
         canAttack = false;
         StartCoroutine(AttackCooldown());
