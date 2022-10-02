@@ -84,7 +84,7 @@ public class Enemy : MonoBehaviour
             return;
 
         animator.SetFloat("DirectionX", moveDir.x);
-        animator.SetFloat("DirectionY", moveDir.y);
+        //animator.SetFloat("DirectionY", moveDir.y);
         animator.SetFloat("Speed", rb.velocity.sqrMagnitude);
     }
 
@@ -100,6 +100,7 @@ public class Enemy : MonoBehaviour
 
     private void MoveTowardsPlayer()
     {
+
         moveDir = (targetPosition - selfPosition).normalized;
         rb.velocity = moveDir * movementSpeed;
         Debug.DrawRay(transform.position, moveDir);
@@ -140,8 +141,9 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Attack()
     {
-        //TODO: Get the forward of the enemy and cast the attack there, so the player can dash
-        //TODO: Play animation, particle effect and sound effect
+        if (PauseStatus.Instance.IsPaused)
+            return;
+
         sound.PlaySound("Attack");
         var result = CastAttackArea();
         if (result != null)
@@ -175,7 +177,7 @@ public class Enemy : MonoBehaviour
         //TODO: Play miss effect?
     }
 
-        protected IEnumerator AttackCooldown()
+    protected IEnumerator AttackCooldown()
     {
         yield return new WaitForSeconds(attackCooldown);
         canAttack = true;
@@ -186,6 +188,7 @@ public class Enemy : MonoBehaviour
         PlayerData.Instance.ModifyPoint(pointPrize);
         //TODO: Leave blood splat?
         sound.PlaySound("Die");
+        dieEffect.Play();
         Destroy(gameObject);
     }
 
@@ -193,9 +196,9 @@ public class Enemy : MonoBehaviour
     {
         health -= amount;
         sound.PlaySound("Damage");
+        takeDamageEffect.Play();
 
-
-        if (health >= 0)
+        if (health <= 0)
         {
             Die();
         }

@@ -13,6 +13,7 @@ public class PlayerData : MonoBehaviour
     }
 
     [SerializeField] private PlayerStats stats;
+    [SerializeField] private GameObject gameOverWindow;
 
     public static PlayerData Instance;
 
@@ -28,7 +29,9 @@ public class PlayerData : MonoBehaviour
 
     public void Die()
     {
-        //TODO: Game Over
+        PauseStatus.Instance.IsPaused = true;
+        CharacterController.Instance.gameObject.SetActive(false);
+        gameOverWindow.SetActive(true);
     }
 
     public PlayerStats GetStats() => stats;

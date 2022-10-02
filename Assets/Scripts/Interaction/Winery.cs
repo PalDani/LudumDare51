@@ -5,7 +5,7 @@ using UnityEngine;
 public class Winery : MonoBehaviour
 {
 
-    private bool wineAcquired = false;
+    public static bool wineAcquired = false;
 
     [SerializeField] private ParticleSystem effect; 
 
@@ -24,10 +24,12 @@ public class Winery : MonoBehaviour
     public void AddWine()
     {
         if(wineAcquired != true)
-        wineAcquired = true;
-        EffectManager.Instance.PlayEffect("Wine Acquired");
-        CameraFollow.Instance.globalSound.PlaySound("WineAcquire");
-        CheckWineAcrquireState();
+        {
+            wineAcquired = true;
+            EffectManager.Instance.PlayEffect("Wine Acquired");
+            CameraFollow.Instance.globalSound.PlaySound("WineAcquire");
+            CheckWineAcrquireState();
+        }
     }
 
     public void CheckWineAcrquireState()

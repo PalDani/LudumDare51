@@ -26,6 +26,8 @@ public class Timer : MonoBehaviour
 
     private IEnumerator CountDown()
     {
+        yield return new WaitUntil(() => !PauseStatus.Instance.IsPaused);
+
         yield return new WaitForSeconds(1);
         currentTime--;
         if (currentTime == 0)

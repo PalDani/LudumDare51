@@ -22,9 +22,12 @@ public class WaveManager : MonoBehaviour
     [Header("Wave info")]
     public int waveCount = 1;
 
+    public static WaveManager Instance;
+
 
     private void Awake()
     {
+        Instance = this;
         spawnPoints = new List<Transform>();
     }
 

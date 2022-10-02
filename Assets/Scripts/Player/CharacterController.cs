@@ -74,15 +74,17 @@ public class CharacterController : MonoBehaviour
         if (PauseStatus.Instance.IsPaused)
             return;
 
-        velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed : 1);
+        velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed * Time.deltaTime: 1);
         rb.velocity = velocity;
 
 
-        animator.SetFloat("Speed", velocity.sqrMagnitude);
+        animator.SetFloat("Speed", playerDir.sqrMagnitude);
         if(rb.velocity != Vector2.zero)
         {
-            animator.SetFloat("MovementX", playerDir.x + Mathf.Abs(playerDir.y));
-            //animator.SetFloat("MovementY", playerDir.y);
+            if((playerDir.x < 0 && playerDir.y > 0))
+                animator.SetFloat("MovementX", playerDir.x + playerDir.y - 0.01f);
+            else
+                animator.SetFloat("MovementX", playerDir.x + playerDir.y);
         }
 
         if (isDashing)
