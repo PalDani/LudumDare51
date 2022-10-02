@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(SoundPlayer))]
 public class Enemy : MonoBehaviour
 {
     public enum CharacterDirection { LEFT = 1, UP = 2, RIGHT = 3, DOWN = 4, }
@@ -36,12 +37,14 @@ public class Enemy : MonoBehaviour
     public Vector2 directionVec;
     public float angle;
     public Vector2 moveDir;
-    
+    private SoundPlayer sound;
+
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        sound = GetComponent<SoundPlayer>();
     }
 
     void Start()
@@ -55,6 +58,9 @@ public class Enemy : MonoBehaviour
     
     void Update()
     {
+        if (PauseStatus.Instance.IsPaused)
+            return;
+
         targetPosition = new Vector2(target.position.x, target.position.y);
         selfPosition = new Vector2(transform.position.x, transform.position.y);
         distance = GetDistanceToTarget();
@@ -64,11 +70,19 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        FollowPlayer();
+        if (!PauseStatus.Instance.IsPaused)
+            FollowPlayer();
+        else
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
 
     private void LateUpdate()
     {
+        if (PauseStatus.Instance.IsPaused)
+            return;
+
         animator.SetFloat("DirectionX", moveDir.x);
         animator.SetFloat("DirectionY", moveDir.y);
         animator.SetFloat("Speed", rb.velocity.sqrMagnitude);
@@ -128,6 +142,7 @@ public class Enemy : MonoBehaviour
     {
         //TODO: Get the forward of the enemy and cast the attack there, so the player can dash
         //TODO: Play animation, particle effect and sound effect
+        sound.PlaySound("Attack");
         var result = CastAttackArea();
         if (result != null)
         {
@@ -149,6 +164,7 @@ public class Enemy : MonoBehaviour
         {
             Attack();
             animator.SetTrigger("Attack");
+            animator.ResetTrigger("Attack");
         }
             
     }
@@ -168,15 +184,18 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         PlayerData.Instance.ModifyPoint(pointPrize);
-        //TODO: Play die sound and effect, leave blood splat
+        //TODO: Leave blood splat?
+        sound.PlaySound("Die");
         Destroy(gameObject);
     }
 
     public void TakeDamage(float amount)
     {
         health -= amount;
+        sound.PlaySound("Damage");
 
-        if(health >= 0)
+
+        if (health >= 0)
         {
             Die();
         }
@@ -185,5 +204,13 @@ public class Enemy : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "PlayerAttack")
+        {
+            TakeDamage(PlayerData.Instance.GetStats().damage);
+        }
     }
 }

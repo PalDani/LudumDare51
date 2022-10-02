@@ -76,15 +76,17 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_FlipX
-    path: 
+    path: BodyRender
     classID: 212
     script: {fileID: 0}
   m_PPtrCurves:
   - curve:
     - time: 0
       value: {fileID: -2135589242, guid: b99325e898a5ffe4b8eebac5b61881f1, type: 3}
+    - time: 0.6666667
+      value: {fileID: -2135589242, guid: b99325e898a5ffe4b8eebac5b61881f1, type: 3}
     attribute: m_Sprite
-    path: 
+    path: BodyRender
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -103,7 +105,7 @@ AnimationClip:
       isPPtrCurve: 0
       isIntCurve: 0
     - serializedVersion: 2
-      path: 0
+      path: 4118607832
       attribute: 555744692
       script: {fileID: 0}
       typeID: 212
@@ -111,7 +113,7 @@ AnimationClip:
       isPPtrCurve: 0
       isIntCurve: 0
     - serializedVersion: 2
-      path: 0
+      path: 4118607832
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -120,12 +122,13 @@ AnimationClip:
       isIntCurve: 0
     pptrCurveMapping:
     - {fileID: -2135589242, guid: b99325e898a5ffe4b8eebac5b61881f1, type: 3}
+    - {fileID: -2135589242, guid: b99325e898a5ffe4b8eebac5b61881f1, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.6666667
+    m_StopTime: 0.68333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -277,7 +280,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_FlipX
-    path: 
+    path: BodyRender
     classID: 212
     script: {fileID: 0}
   m_EulerEditorCurves: []

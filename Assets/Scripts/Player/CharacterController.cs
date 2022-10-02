@@ -14,6 +14,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float movementSpeedBoostMultiplier = 0.2f;
     [SerializeField] private float dashSpeed = 2;
     [SerializeField] private float dashCooldown = 1;
+    [SerializeField] private float attackCooldown = .25f;
+    [SerializeField] private bool canAttack = true;
     [SerializeField] private bool canDash = true;
     [SerializeField] private bool isDashing = false;
 
@@ -24,11 +26,14 @@ public class CharacterController : MonoBehaviour
     [Header("Manually assigned components")]
     [SerializeField] private GameObject attackCollider;
     [SerializeField] private TrailRenderer trailRenderer;
+    [SerializeField] private Animator animator;
     
     [Header("Automatically assigned components")]
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private CircleCollider2D collider;
+    [SerializeField] private CapsuleCollider2D collider;
     [SerializeField] private Vector2 playerDir;
+    [SerializeField] private float animatorMovementLastNonZeroX;
+    public SoundPlayer sound;
 
     [Header("Runtime data")]
     [SerializeField] private Vector2 velocity;
@@ -43,7 +48,8 @@ public class CharacterController : MonoBehaviour
     {
         Instance = this;
         rb = GetComponent<Rigidbody2D>();
-        collider = GetComponent<CircleCollider2D>();
+        collider = GetComponent<CapsuleCollider2D>();
+        sound = GetComponent<SoundPlayer>();
     }
 
     // Start is called before the first frame update
@@ -56,16 +62,38 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (PauseStatus.Instance.IsPaused)
+            return;
+
         GetInput();
         GetDirection();
     }
 
     private void FixedUpdate()
     {
+        if (PauseStatus.Instance.IsPaused)
+            return;
+
         velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed : 1);
         rb.velocity = velocity;
 
+
+        animator.SetFloat("Speed", velocity.sqrMagnitude);
+        if(rb.velocity != Vector2.zero)
+        {
+            animator.SetFloat("MovementX", playerDir.x + Mathf.Abs(playerDir.y));
+            //animator.SetFloat("MovementY", playerDir.y);
+        }
+
+        if (isDashing)
+        {
+            CharacterController.Instance.sound.PlaySound("Dash");
+            animator.SetTrigger("Dash");
+        }
+
         isDashing = false;
+        animator.ResetTrigger("Dash");
+        animator.ResetTrigger("Attack");
     }
 
     private void GetInput()
@@ -83,7 +111,7 @@ public class CharacterController : MonoBehaviour
             Dash();
         }
         
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && canAttack)
         {
             Attack();
         }
@@ -118,11 +146,19 @@ public class CharacterController : MonoBehaviour
     private void Attack()
     {
         print("Attack");
-        
-        
-        var attackDir = (playerPos - mousePos).normalized;
+
         //TODO: Create attack effect towards direction
-        CameraShake.Shake(0.25f, 0.015f);
+        //CameraShake.Shake(0.25f, 0.015f);
+        animator.SetTrigger("Attack");
+
+        canAttack = false;
+        StartCoroutine(AttackCooldown());
+    }
+
+    protected IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
     }
 
     private void Dash()
@@ -163,7 +199,6 @@ public class CharacterController : MonoBehaviour
     private void Interact()
     {
         var hit = Physics2D.OverlapCircle(transform.position, interactionRange, interactionMask);
-        print(hit);
         if (hit != null)
         {
             InteractableObject obj = hit.GetComponent<InteractableObject>();

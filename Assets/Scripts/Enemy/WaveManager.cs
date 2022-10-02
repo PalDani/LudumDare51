@@ -79,7 +79,10 @@ public class WaveManager : MonoBehaviour
 
     public IEnumerator WaveCooldown(float wait = 0)
     {
-        if(wait == 0)
+        yield return new WaitUntil(() => !PauseStatus.Instance.IsPaused);
+
+
+        if (wait == 0)
             wait = Random.Range(minSpawnTime, maxSpawnTime);
 
         print("Next wave in " + wait + " seconds.");

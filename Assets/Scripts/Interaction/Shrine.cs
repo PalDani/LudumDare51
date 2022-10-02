@@ -27,6 +27,7 @@ public class Shrine : MonoBehaviour
         var cards = PowerupManager.Instance.GetPowerupsForShrine();
         SetCards(cards[0], cards[1]);
         SetWindowState(true);
+        PauseStatus.Instance.IsPaused = true;
     }
 
     private void SetCards(Powerup p1, Powerup p2)
@@ -59,6 +60,7 @@ public class Shrine : MonoBehaviour
 
         isAvailable = false;
         SetWindowState(false);
+        PauseStatus.Instance.IsPaused = false;
     }
 
     public void ResetShrine()

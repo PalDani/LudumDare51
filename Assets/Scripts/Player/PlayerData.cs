@@ -34,6 +34,19 @@ public class PlayerData : MonoBehaviour
     public PlayerStats GetStats() => stats;
     public void ModifyHealth(int amount)
     {
+
+        if (amount > 0)
+        {
+            CharacterController.Instance.sound.PlaySound("Heal");
+            EffectManager.Instance.PlayEffect("Heal");
+        }
+        else
+        {
+            EffectManager.Instance.PlayEffect("Damage");
+            CharacterController.Instance.sound.PlaySound("Damage");
+            CameraShake.Shake(0.25f, 0.015f);
+        }
+
         stats.health += amount;
         if (stats.health <= 0)
         {

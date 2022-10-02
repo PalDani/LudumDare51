@@ -26,6 +26,8 @@ public class Winery : MonoBehaviour
         if(wineAcquired != true)
         wineAcquired = true;
         EffectManager.Instance.PlayEffect("Wine Acquired");
+        CameraFollow.Instance.globalSound.PlaySound("WineAcquire");
+        CheckWineAcrquireState();
     }
 
     public void CheckWineAcrquireState()

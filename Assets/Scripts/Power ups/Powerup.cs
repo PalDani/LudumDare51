@@ -39,5 +39,6 @@ public class Powerup : ScriptableObject
                 //Something went wrong
                 break;
         }
+        CameraFollow.Instance.globalSound.PlaySound("Powerup");
     }
 }
