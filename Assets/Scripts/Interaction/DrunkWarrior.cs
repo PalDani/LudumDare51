@@ -11,7 +11,7 @@ public class DrunkWarrior : MonoBehaviour
     [SerializeField] private int maxDamage = 10;
     [SerializeField] private LayerMask castLayerMask;
     [SerializeField] private ParticleSystem usableEffect;
-    [SerializeField] private ParticleSystem castEffect;
+    [SerializeField] private ParticleSystem useEffect;
     [SerializeField] private Animator animator;
 
     private void Awake()
@@ -30,8 +30,10 @@ public class DrunkWarrior : MonoBehaviour
         usableEffect.Stop();
         //castEffect.Play();
         animator.SetBool("Attack", true);
-        
-        
+        useEffect.Play();
+
+
+
         StartCoroutine(DoDamage());
         StartCoroutine(StopAnimation());
         

@@ -10,6 +10,7 @@ public class CharacterController : MonoBehaviour
     public enum CharacterDirection { LEFT = 1, UP = 2, RIGHT = 3, DOWN = 4, }
 
     public GameObject swordHand;
+    public GameObject sword;
 
     [Header("Basic character movement")]
     [SerializeField] private float movementSpeed = 2;
@@ -35,8 +36,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private CapsuleCollider2D collider;
     [SerializeField] private Vector2 playerDir;
-    [SerializeField] private float animatorMovementLastNonZeroX;
-    public SoundPlayer sound;
+    [SerializeField]  public SoundPlayer sound;
 
     [Header("Runtime data")]
     [SerializeField] private Vector2 velocity;
@@ -87,17 +87,38 @@ public class CharacterController : MonoBehaviour
         }
 
 
-        velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed * Time.deltaTime: 1);
+        velocity = new Vector2(playerDir.x * movementSpeed, playerDir.y * movementSpeed) * (isDashing ? dashSpeed * Time.fixedDeltaTime: 1);
         rb.velocity = velocity;
+
+        /*if(playerDir.x > 0)
+        {
+            swordHand.GetComponent<SpriteRenderer>().flipY = true;
+            sword.GetComponent<SpriteRenderer>().flipY = true;
+            //swordHand.transform.rotation = Quaternion.Euler(0, 180, 0);
+        } else
+        {
+            swordHand.GetComponent<SpriteRenderer>().flipY = false;
+            sword.GetComponent<SpriteRenderer>().flipY = false;
+        }*/
 
 
         animator.SetFloat("Speed", playerDir.sqrMagnitude);
         if(rb.velocity != Vector2.zero)
         {
             if((playerDir.x < 0 && playerDir.y > 0))
+            {
                 animator.SetFloat("MovementX", playerDir.x + playerDir.y - 0.01f);
+                //handAnimator.SetFloat("MovementX", playerDir.x + playerDir.y - 0.01f);
+
+                //swordHand.transform.localPosition = new Vector3(-0.1132f, 0.144f, 0);
+            }
             else
+            {
                 animator.SetFloat("MovementX", playerDir.x + playerDir.y);
+                //handAnimator.SetFloat("MovementX", playerDir.x + playerDir.y);
+
+                //swordHand.transform.localPosition = new Vector3(-0.09999999f, 0.144f, 0);
+            }
         }
 
         if (isDashing)
@@ -108,7 +129,7 @@ public class CharacterController : MonoBehaviour
 
         isDashing = false;
         animator.ResetTrigger("Dash");
-        animator.ResetTrigger("Attack");
+        //animator.ResetTrigger("Attack");
 
 
     }
